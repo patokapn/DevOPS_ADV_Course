@@ -35,6 +35,11 @@ resource "aws_security_group" "web-ssh" {
 resource "aws_instance" "linux-srv" {
   ami                    = "ami-0502e817a62226e03" # Ubuntu Server 20.04 LTS
   instance_type          = "t2.micro"
+  key_name = "AWS"
   vpc_security_group_ids = [aws_security_group.web-ssh.id]
   user_data = "${file("init-script.sh")}"
+
+  tags = {
+    "Name" = "Ubuntu 20.04 LTS instance"
+  }
 }

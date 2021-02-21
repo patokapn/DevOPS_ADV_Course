@@ -32,7 +32,7 @@ resource "aws_security_group" "web-ssh" {
   }
 }
 
-resource "aws_instance" "linux-lb" {
+resource "aws_instance" "linux-srv" {
   ami                    = "ami-0502e817a62226e03" # Ubuntu Server 20.04 LTS
   instance_type          = "t2.micro"
   key_name = "AWS"
@@ -40,29 +40,6 @@ resource "aws_instance" "linux-lb" {
   user_data = file("init-script.sh")
 
   tags = {
-    "Name" = "Loadbalancer Ubuntu 20.04LTS"
-  }
-}
-
-resource "aws_instance" "linux-node1" {
-  ami                    = "ami-0502e817a62226e03" # Ubuntu Server 20.04 LTS
-  instance_type          = "t2.micro"
-  key_name = "AWS"
-  vpc_security_group_ids = [aws_security_group.web-ssh.id]
-  user_data = file("init-script.sh")
-
-  tags = {
-    "Name" = "Node1 Ubuntu 20.04LTS"
-  }
-}
-resource "aws_instance" "linux-node2" {
-  ami                    = "ami-0502e817a62226e03" # Ubuntu Server 20.04 LTS
-  instance_type          = "t2.micro"
-  key_name = "AWS"
-  vpc_security_group_ids = [aws_security_group.web-ssh.id]
-  user_data = file("init-script.sh")
-
-  tags = {
-    "Name" = "Node2 Ubuntu 20.04LTS"
+    "Name" = "Ubuntu 20.04 LTS instance"
   }
 }

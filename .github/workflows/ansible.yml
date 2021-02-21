@@ -43,4 +43,4 @@ jobs:
           playbookName: 'ansible/deploy.yml'
           inventoryFile: 'ansible/hosts'
           keyFile: 'ansible/key.pem'
-          verbosity: "vv"
+          verbosity: "vvvv"

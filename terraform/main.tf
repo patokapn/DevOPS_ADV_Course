@@ -40,7 +40,7 @@ resource "aws_instance" "linux-lb" {
   user_data = file("init-script.sh")
 
   tags = {
-    "Name" = "Loadblancer Ubuntu 20.04LTS"
+    "Name" = "Loadbalancer Ubuntu 20.04LTS"
   }
 }
 

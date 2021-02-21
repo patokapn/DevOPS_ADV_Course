@@ -31,7 +31,7 @@ jobs:
           SSH: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
             host=$(grep "ec2_loadbalancer" terraform.log | awk -F  ":" '{print $1}' )
-            host=${host//'ec2_endpoint = "'}
+            host=${host//'ec2_loadbalancer = "'}
             host=${host//'"'}
             echo $host >> ansible/hosts
             echo "$SSH" > ansible/key.pem

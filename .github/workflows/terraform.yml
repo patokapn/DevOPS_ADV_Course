@@ -10,6 +10,9 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./terraform
     steps:
       
       - name: Checkout
@@ -22,17 +25,14 @@ jobs:
       
       - name: Terraform Format
         id: fmt
-        working-directory: 'terraform'
         run: terraform fmt
         
       - name: Terraform Init
         id: init
-        working-directory: 'terraform'
         run: terraform init
       
       - name: Terraform Plan
         id: plan
-        working-directory: 'terraform'
         if: github.event_name == 'pull_request'
         run: terraform plan -no-color
         continue-on-error: true
@@ -71,7 +71,6 @@ jobs:
         run: terraform apply -auto-approve
 
       - name: Terraform Output
-        working-directory: 'terraform'
         id: output
         run: terraform output > ../terraform.log
 

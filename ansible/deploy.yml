@@ -1,61 +1,72 @@
-- name: Lesson12
-  gather_facts: false
-  hosts: [all]
-  become: yes
-
+- hosts: all
+  become: true
+  become_user: root
   tasks:
-    - name: Install yum utils
-      yum:
-        name: yum-utils
-        state: latest
+    - name: Update apt repo and cache
+      apt: update_cache=yes force_apt_get=yes
 
-    - name: Install device-mapper-persistent-data
-      yum:
-        name: device-mapper-persistent-data
-        state: latest
+    - name: Install packages for Docker
+      apt:
+        name: "{{ packages }}"
+        state: present
+        force_apt_get: "yes"
+      vars:
+        packages:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
 
-    - name: Install iptables
-      yum:
-        name: iptables
-        state: latest
+    - name: Upgrade all apt packages
+      apt: upgrade=dist force_apt_get=yes
 
-    - name: Install lvm2
-      yum:
-        name: lvm2
-        state: latest
+    - name: Add GPG key for the official Docker repository
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
 
-    - name: Install python3
-      yum:
-        name: python3
-        state: latest   
+    - name: Add the Docker repository to APT sources
+      apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'
+        state=present
 
-    - name: Install docker pip
+    - name: Update apt-get repo and cache
+      apt: update_cache=yes force_apt_get=yes
+
+    - name: ensure docker and dependencies are installed
+      apt: name=docker-ce update_cache=yes
+    - service: name=docker 
+        state=restarted
+
+    - name: Install Docker Module for Python
       pip:
         name: docker
 
-    - name: Add Docker repo
-      get_url:
-        url: https://download.docker.com/linux/centos/docker-ce.repo
-        dest: /etc/yum.repos.d/docer-ce.repo
-      become: yes
-
-    - name: Install Docker
-      package:
-        name: docker-ce
-        state: latest
-      become: yes
-
-    - name: Start Docker service
-      service:
-        name: docker
-        state: started
-        enabled: yes
-      become: yes
-
-    - name: Add user ec2-user to docker group
+    - name: Adding user ansible to docker group  
       user:
-        name: ec2-ser
-        groups: docker
-        append: yes
-      become: yes
+        name: "ansible"
+        groups: "docker"
+        append: "yes"
 
+    - name: Start Reverse proxy
+      docker_container:
+        name: Nginx_reverse_proxy
+        image: jwilder/nginx-proxy:alpine
+        pull: true
+        ports:
+          - "80:80"
+        state: started
+
+    - name: Check if a reboot is needed on all servers
+      register: reboot_required_file
+      stat: path=/var/run/reboot-required get_md5=no
+
+    - name: Reboot the Debian or Ubuntu server
+      reboot:
+        msg: "Reboot initiated by Ansible due to kernel updates"
+        connect_timeout: 5
+        reboot_timeout: 300
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+        test_command: uptime
+      when: reboot_required_file.stat.exists

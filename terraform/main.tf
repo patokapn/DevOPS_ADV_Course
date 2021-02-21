@@ -51,7 +51,7 @@ resource "aws_instance" "linux-node1" {
   user_data = file("init-script.sh")
 
   tags = {
-    "Name" = "N1 Ubuntu 20.04LTS"
+    "Name" = "Node1 Ubuntu 20.04LTS"
   }
 }
 resource "aws_instance" "linux-node2" {
@@ -62,6 +62,6 @@ resource "aws_instance" "linux-node2" {
   user_data = file("init-script.sh")
 
   tags = {
-    "Name" = "N2 Ubuntu 20.04LTS"
+    "Name" = "Node2 Ubuntu 20.04LTS"
   }
 }

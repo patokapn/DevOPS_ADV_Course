@@ -41,6 +41,7 @@ resource "aws_instance" "linux-lb" {
   tags = {
     "Name" = "Loadblancer Ubuntu 20.04LTS"
   }
+}
 
 resource "aws_instance" "linux-node1" {
   ami                    = "ami-0502e817a62226e03" # Ubuntu Server 20.04 LTS
@@ -52,7 +53,7 @@ resource "aws_instance" "linux-node1" {
   tags = {
     "Name" = "N1 Ubuntu 20.04LTS"
   }
-
+}
 resource "aws_instance" "linux-node2" {
   ami                    = "ami-0502e817a62226e03" # Ubuntu Server 20.04 LTS
   instance_type          = "t2.micro"
